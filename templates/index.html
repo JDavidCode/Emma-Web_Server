@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+	<script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
+	<script src="{{ url_for('static', filename='js/jquery-3.6.4.min.js') }}"></script>
+  	<script src="{{ url_for('static', filename='js/particles.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+
+
+	<title>Console</title>
+</head>
+<body>
+
+	<div id="command-bar">
+	<h2 id="banner_h2">Web Console</h2>
+		<form id="command-form" method="POST" action="{{ url_for('process_form') }}">
+			<input id="command-input" type="text" name="text_input" placeholder="Insert a Comand">
+			<input id="command-btn" type="submit" value="Submit">
+		</form>
+	<h3 id="local-time"></h3>
+	</div>
+	<section class="data-container" >
+		<article class="container server-info-container">
+			<p class="disconnect-text">DISCONNECTED</p>
+			<table id="internal-data-table" class="table-box">
+					<tr>
+						<th colspan="2" class="box-header">Internal server</th>
+					</tr>
+					<tr>
+						<td>Server Status:</td>
+						<td id="server-status">-</td>
+					</tr>
+					<tr>
+						<td>Server Load:</td>
+						<td id="server-load">-</td>
+					</tr>
+					<tr>
+						<td>Threads:</td>
+						<td id="server-threads">-</td>
+					</tr>
+					<tr>
+						<td>Ram Usage:</td>
+						<td id="server-ram-usage">-</td>
+					</tr>
+					<tr>
+						<td>Time Alive:</td>
+						<td id="server-time">-</td>
+					</tr>
+				</table>
+
+		</article>	
+		<article class="container console-container">
+			<p class="disconnect-text">DISCONNECTED</p>
+			<div class="console-header">Console Output</div>
+			<div id="console-box">
+				<div id="console-content">
+
+				</div>
+			</div>
+		</article>
+		<article class="container user-info-container" >
+			<table id="user-data-table"class="table-box">
+				<tr>
+					<th colspan="2"class="box-header">User</th>
+				</tr>
+				<tr>
+					<td>Role:</td>
+					<td >ADMIN</td>
+				</tr>
+				<tr>
+					<td>Name:</td>
+					<td id="user-name">Juan</td>
+				</tr>
+				<tr>
+					<td>Age:</td>
+					<td id="user-age">18</td>
+				</tr>
+				<tr>
+					<td>Language:</td>
+					<td id="user-language">EN</td>
+				</tr>
+				<tr>
+					<td>Date of birth:</td>
+					<td >18-07-04</td>
+				</tr>
+			</table>
+		</article>
+	</section>
+	
+
+	<div id="particles"></div>	
+	
+    
+  </div>
+</body>
+</html>

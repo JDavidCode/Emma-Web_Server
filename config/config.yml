@@ -1,0 +1,14 @@
+version: 1.0
+
+forge_service:
+  - queue: SERVERDATA
+    queue_maxsize: 1
+    package_name: web_server
+    endpoint: app
+    args: 
+      - queue
+      - console
+    thread_name: T0_WEB_SERVER
+    thread_is_daemon: False
+    autostart: True
+    custom_packages: False
