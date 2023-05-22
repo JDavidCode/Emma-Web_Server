@@ -1,29 +1,34 @@
-import logging
+import emma.config.globals as EMMA_GLOBALS
+from flask import Flask, render_template, request, jsonify
+from flask_socketio import SocketIO
 import os
 import json
-import re
+import logging
 import threading
-from flask import Flask, jsonify, render_template, request
-from flask_socketio import SocketIO
-import emma.config.globals as EMMA_GLOBALS
 
 
 class app:
-    def __init__(self, queue_manager, console_manager):
+    def __init__(self, queue_handler, console_handler):
         self.app = Flask(__name__)
         self.history = self.json_history()
-        self.console_manager = console_manager
-        self.queue = queue_manager
+        self.console_handler = console_handler
+        self.queue = queue_handler
         self.event = threading.Event()
         self.tag = "WEB_APP Thread"
         self.socketio = SocketIO(self.app)
         log = logging.getLogger('werkzeug')
         log.setLevel(logging.ERROR)
+        global time_breakout
+        time_breakout = 0
 
     def json_history(self):
+        module_dir = os.path.dirname(os.path.abspath(__file__))
+        parent_dir = os.path.dirname(module_dir)
         date = EMMA_GLOBALS.task_msc.date_clock(2)
-        history_dir = os.path.join("..", "history")  # Relative folder path
+        history_dir = os.path.join(
+            parent_dir, "web_server", "history")  # Relative folder path
         history_path = os.path.join(history_dir, f"{date}.json")
+
         if not os.path.exists(history_dir):
             # Create the directory if it doesn't exist
             os.makedirs(history_dir)
@@ -61,13 +66,20 @@ class app:
 
         @self.socketio.on("get_data")
         def get_data():
+            global time_breakout
             data = self.queue.get_queue("SERVERDATA")
 
             # emit the data to the client
+            time_breakout += 1
+            if time_breakout >= 1000:
+                self.restart_websocket_server()
+                time_breakout = 0
             self.socketio.emit("get_data", data)
 
         @self.socketio.on("get_console")
         def get_console():
+            global time_breakout
+
             j_data = {}
             f = open(self.history)
             json_data = json.load(f)
@@ -84,6 +96,10 @@ class app:
 
             f.close()
             # emit the data to the client
+            time_breakout += 1
+            if time_breakout >= 1000:
+                self.restart_websocket_server()
+                time_breakout = 0
             self.socketio.emit("get_console", j_data)
 
     def main(self):
@@ -92,9 +108,9 @@ class app:
 
         try:
             self.socketio.run(self.app, port=3018)
-            self.console_manager.write(self.tag, "WEB SERVER LOADED")
+            self.console_handler.write(self.tag, "WEB SERVER LOADED")
         except Exception as e:
-            self.console_manager.write(self.tag, str(e))
+            self.console_handler.write(self.tag, str(e))
 
     def run(self):
         self.event.set()
